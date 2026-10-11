@@ -181,7 +181,9 @@ def seal(layer, x, y, ch, size=46):
     t = Image.new('RGBA', (sz, sz), (0, 0, 0, 0))
     d = ImageDraw.Draw(t)
     d.rounded_rectangle([0, 0, sz - 1, sz - 1], radius=s(5), fill=VERM + (225,))
-    f = ImageFont.truetype(F_SEAL, int(sz * .66))
+    # whichever face actually has the character: the seal subset, or the brush
+    path = F_SEAL if ord(ch) in TTFont(F_SEAL).getBestCmap() else os.path.join(FD, 'brush.ttf')
+    f = ImageFont.truetype(path, int(sz * .66))
     tw = d.textlength(ch, font=f)
     d.text(((sz - tw) / 2, sz * .1), ch, font=f, fill=(250, 238, 226, 255))
     # pressed unevenly, the way a chop is
@@ -201,7 +203,7 @@ def spread(p, idx):
 
     # ---- left page: the story
     f_k = font(F_BODY_M, 11.5)
-    tracked(d, (L0, TOP), f'PLATE {idx + 1:02d}  ·  {p["year"]}', f_k, INK_SOFT, .26)
+    tracked(d, (L0, TOP), f'PLATE {p.get("plate", idx + 1):02d}  ·  {p["year"]}', f_k, INK_SOFT, .26)
     f_t = font(F_DISPLAY, 66 if len(p['title']) < 11 else 56)
     d.text((L0 - s(3), TOP + s(26)), p['title'], font=f_t, fill=INK + (240,))
     f_i = font(F_ITALIC, 25)
@@ -218,14 +220,13 @@ def spread(p, idx):
             y += lh
         y += lh * .5
     # the record: role, stack, link — set as a small ruled table at the foot
-    rows = [('Role', p['role']), ('Stack', p['stack'])]
-    if p.get('where'): rows.append(('Where', p['where']))
+    rows = p.get('rows') or [('Role', p['role']), ('Stack', p['stack'])] + ([('Where', p['where'])] if p.get('where') else [])
     f_rk = font(F_BODY_M, 10.5); f_rv = font(F_BODY, 13.2)
     ry = max(y + s(8), BOT - s(32) * len(rows) - s(10))
     for k, v in rows:
         jline(d, (L0, ry - s(8)), (L0 + LW, ry - s(8)), int(ry), 1, INK + (60,))
         tracked(d, (L0, ry), k.upper(), f_rk, INK_FAINT, .22)
-        d.text((L0 + s(92), ry - s(3)), v, font=f_rv, fill=INK + (215,))
+        d.text((L0 + s(104), ry - s(3)), v, font=f_rv, fill=INK + (215,))
         ry += s(32)
 
     # ---- right page: the work
@@ -238,6 +239,8 @@ def spread(p, idx):
     else:
         wash(layer, (s(980), s(380), s(1600), s(880)), fig.get('wash', (110, 132, 168)), idx + 5, .12)
         fig['draw'](d, layer, idx)
+    if fig.get('note'):
+        fig['note'](d, layer, idx)
     f_c = font(F_ITALIC, 19)
     d.text((s(960), s(905)), fig['cap'], font=f_c, fill=INK + (200,))
     seal(layer, s(1580), s(840), p['seal'])
@@ -312,6 +315,30 @@ def diag_phone(seed):
             arrow(d, (tx + s(60 if i == 0 else 30), s(600 + i * 90)), (x - s(10) if i == 0 else x + w + s(10), s(600 + i * 60)), seed + 60 + i)
     return draw
 
+def note_me(d, layer, idx):
+    f = font(F_ITALIC, 30)
+    d.text((s(1395), s(372)), "that's me —", font=f, fill=INK + (225,))
+    d.text((s(1395), s(404)), 'above the clouds', font=font(F_ITALIC, 22), fill=EARTH + (230,))
+    # a looping hand-drawn arrow down to the print
+    pts = []
+    for i in range(24):
+        t = i / 23
+        pts.append((s(1420) - t * s(120) + math.sin(t * 5.2) * s(16), s(440) + t * s(70) + math.cos(t * 4.0) * s(10)))
+    for i in range(len(pts) - 1):
+        jline(d, pts[i], pts[i + 1], 900 + i, 2, INK + (200,))
+    tip = pts[-1]
+    jline(d, tip, (tip[0] + s(16), tip[1] - s(6)), 950, 2, INK + (200,))
+    jline(d, tip, (tip[0] + s(8), tip[1] - s(16)), 951, 2, INK + (200,))
+
+AUTHOR = dict(key='author', plate=0, title='Aryan Jain', sub='the one who builds all of this', year='2026', date='OCT 2026', seal='創',
+       place='The author', rows=[('Studying', 'B.Tech CSE · IIIT Naya Raipur · 2025–29'), ('From', 'Baraut, Uttar Pradesh'),
+                                 ('Open to', 'internships where tech meets business')],
+       body=["I learned to code the way most people learn to swim: by jumping in. Codeforces taught me to love a hard problem; building things taught me to love a finished one.",
+             "I like the place where software meets a real business: a form that turns into an order desk, a site that books a client's week, an app that helps a child read.",
+             "These field notes are what I have built so far. Turn the page."],
+       fig=dict(kind='photos', cap='fig. 0 — a lookout, somewhere above the clouds', wash=(120, 140, 120), note=note_me,
+                photos=[dict(file='aryan-photo.png', box=(980, 420, 1400, 890), ang=-2.6)]))
+
 PROJECTS = [
   dict(key='imposter', title='IMPOSTER', sub='a poster business that runs itself', year='2026', date='MAY 2026', seal='印',
        role='Founder & builder', stack='n8n · Google Forms · Sheets · Drive · Next.js',
@@ -385,9 +412,9 @@ PROJECTS = [
 if __name__ == '__main__':
     import json
     meta = []
-    for i, p in enumerate(PROJECTS):
+    for i, p in enumerate([AUTHOR] + PROJECTS):
         im = spread(p, i)
-        fn = f'{i + 1:02d}-{p["key"]}.webp'
+        fn = f'{i:02d}-{p["key"]}.webp'
         im.save(os.path.join(OUT, fn), 'WEBP', quality=86, method=6)
         meta.append(dict(file=fn, title=p['title'], place=p['place']))
         print(fn, os.path.getsize(os.path.join(OUT, fn)) // 1024, 'KB')

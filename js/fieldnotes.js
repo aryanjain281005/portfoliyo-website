@@ -16,6 +16,8 @@
 const Q = new URLSearchParams(location.search);
 const DIR = 'fieldnotes/';
 const PAGES = [
+  { file: '00-author.webp',     title: 'Aryan Jain',   place: 'The author',
+    links: [['GitHub', 'https://github.com/aryanjain281005'], ['LinkedIn', 'https://www.linkedin.com/in/aryan-jain-256465382/'], ['Résumé', 'assets/aryan-jain-resume.pdf']] },
   { file: '01-imposter.webp',    title: 'IMPOSTER',     place: 'n8n · Business',
     links: [['Source', 'https://github.com/aryanjain281005/IMPOSTER-N8N-BUISNESS-AUTOMATION']] },
   { file: '02-vyanasoul.webp',   title: 'VyanaSoul',    place: 'Client · Live',
@@ -441,7 +443,7 @@ if (plateList) PAGES.forEach((p, i) => {
   const li = el('li');
   const b = el('button', 'plate');
   b.setAttribute('data-cursor', '');
-  b.innerHTML = '<span class="n">' + String(i + 1).padStart(2, '0') + '</span>' +
+  b.innerHTML = '<span class="n">' + String(i).padStart(2, '0') + '</span>' +
                 '<span class="t"></span><span class="p"></span>';
   b.querySelector('.t').textContent = p.title;
   b.querySelector('.p').textContent = p.place;
