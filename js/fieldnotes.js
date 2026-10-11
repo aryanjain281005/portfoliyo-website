@@ -387,6 +387,11 @@ function shoveLoupe(dir) {
   lTarget = { x: b.x + b.w * (dir === 'next' ? 0.08 : 0.92), y: b.y + b.h * 0.74 };
   kick();
 }
+/* after the riffle has shoved it about, the glass goes back to its corner */
+function settleLoupe() {
+  if (!loupeOn || lgrab) return;
+  const b = bookBox(); lTarget = { x: b.x + b.w * 0.92, y: b.y + b.h * 0.74 }; kick();
+}
 function loupeEase() {
   if (!lTarget) return false;
   if (lgrab) { lTarget = null; return false; }
@@ -463,7 +468,7 @@ function riffleStep() {
     idx = turn.to; turn = null;
     riffleAt++;
     if (introOn && riffleAt < riffle.length) { paint(); riffleStep(); }
-    else { endIntro(); paint(); }
+    else { endIntro(); paint(); settleLoupe(); }
   });
 }
 function riffleTo(i) {
@@ -481,14 +486,27 @@ function riffleTo(i) {
 }
 
 /* ------------------------------------------------------- the dialog */
-const preload = PAGES.map(p => { const im = new Image(); im.decoding = 'async'; return im; });
-let loaded = false;
-function warm() {
-  if (loaded) return; loaded = true;
-  preload.forEach((im, i) => { im.src = PAGES[i].url; });
+/* The spreads are 2640 px wide: nine of them decoded up front is ~180 MB of
+   bitmap and a run of main-thread decodes in the middle of someone's scroll.
+   Only the plates the riffle will show are fetched when the book opens, each
+   decoded off the main thread; the rest follow when the browser is idle. */
+const decoded = new Map();
+function want(i) {
+  i = (i + M) % M;
+  if (decoded.has(i)) return decoded.get(i);
+  const im = new Image(); im.decoding = 'async'; im.src = PAGES[i].url;
+  const p = (im.decode ? im.decode() : new Promise(r => { im.onload = im.onerror = r; })).catch(() => {}).then(() => im);
+  decoded.set(i, p); return p;
+}
+function warmAround(i) {
+  const need = [];
+  for (let k = -4; k <= 1; k++) need.push(want(i + k));
+  const rest = () => PAGES.forEach((_, k) => want(k));
+  (window.requestIdleCallback || (f => setTimeout(f, 1200)))(rest, { timeout: 4000 });
+  return Promise.all(need);
 }
 function open(i, from) {
-  warm();
+  const ready = warmAround(i);
   lastFocus = from || document.activeElement;
   fn.hidden = false;
   document.documentElement.classList.add('fn-lock');
@@ -496,10 +514,13 @@ function open(i, from) {
   isOpen = true;
   hint.classList.remove('gone');
   view.z = view.tz = 1; view.rx = view.ry = view.trx = view.try_ = 0; applyView(); syncZoom();
+  idx = i; paint();
   requestAnimationFrame(() => {
     fn.classList.add('open');
     layout(); lx = null; restLoupe();
-    riffleTo(i);
+    /* the riffle waits for its plates, but never long: on a slow line the
+       book simply opens on its page */
+    Promise.race([ready, new Promise(r => setTimeout(r, 900))]).then(() => { if (isOpen) riffleTo(i); });
     const x = fn.querySelector('.fn-x'); x && x.focus({ preventScroll: true });
   });
 }
@@ -526,8 +547,6 @@ document.querySelectorAll('[data-book]').forEach(t => {
   t.addEventListener('click', go, true);
   t.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') go(e); });
 });
-/* the plates are light; start fetching them once the page has settled */
-addEventListener('load', () => setTimeout(warm, 2500));
 window.__fieldnotes = { open: open, close: close };
 if (Q.has('notes')) setTimeout(() => open(parseInt(Q.get('notes'), 10) || 0), 600);
 })();
