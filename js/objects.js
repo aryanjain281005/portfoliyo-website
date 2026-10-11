@@ -7,6 +7,8 @@
          is written on the back.
    名刺  the card leans toward the pointer on a spring and turns over on one;
          "Take my card" hands over a real contact (vCard).
+   祭    the festival ticket: pull its stub along the perforation (or tap it)
+         and the back of the ticket shows who brought the sponsors in.
    御神籤 the fortune box shakes, a numbered stick rises, and its slip unfolds.
 
    Every loop here sleeps when its object is off screen, and nothing moves
@@ -135,6 +137,62 @@ function visibleLoop(el, step) {
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     takeBtn.querySelector('span').textContent = 'Card taken — thank you';
   });
+})();
+
+/* ------------------------------------------------------------- 祭 */
+(function matsuri() {
+  const ticket = document.getElementById('ticket'); if (!ticket) return;
+  const stub = ticket.querySelector('.tk-stub');
+  const reset = document.querySelector('[data-tk-reset]');
+  let torn = false, drag = null;
+  const set = (dx, rz) => { stub.style.setProperty('--dx', dx + 'px'); stub.style.setProperty('--rz', rz + 'deg'); };
+  const tear = () => {
+    if (torn) return; torn = true;
+    ticket.classList.remove('mend'); ticket.classList.add('torn');
+    stub.style.transform = '';
+    stub.setAttribute('aria-pressed', 'true');
+    if (reset) { reset.hidden = false; }
+  };
+  const mend = () => {
+    torn = false; set(0, 0);
+    ticket.classList.remove('torn'); void ticket.offsetWidth; ticket.classList.add('mend');
+    stub.setAttribute('aria-pressed', 'false');
+    if (reset) reset.hidden = true;
+    stub.focus({ preventScroll: true });
+  };
+  /* pull it: the stub hinges on its lower corner along the perforation, and
+     past a short pull it gives; let go early and it springs back */
+  stub.addEventListener('pointerdown', e => {
+    if (torn) return;
+    drag = { x: e.clientX, y: e.clientY, id: e.pointerId, moved: false };
+  });
+  addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.moved && Math.abs(dx) < 6) return;
+    if (!drag.moved && Math.abs(dy) > Math.abs(dx)) { drag = null; return; }   /* a scroll, not a pull */
+    drag.moved = true;
+    const p = Math.max(0, dx);
+    const rz = Math.min(16, p / 5);
+    stub.style.transition = 'none';
+    stub.style.transform = 'translateX(' + Math.min(18, p * .25).toFixed(1) + 'px) rotate(' + rz.toFixed(2) + 'deg)';
+    set(Math.min(18, p * .25), rz);
+    if (p > 70) { drag = null; tear(); }
+  }, { passive: true });
+  let pulled = false;
+  const release = () => {
+    if (!drag) return;
+    const moved = drag.moved; drag = null;
+    if (!torn && moved) {
+      pulled = true; setTimeout(() => { pulled = false; }, 0);
+      stub.style.transition = 'transform .45s cubic-bezier(.3,1.6,.5,1)'; stub.style.transform = ''; set(0, 0);
+    }
+  };
+  addEventListener('pointerup', release); addEventListener('pointercancel', release);
+  /* a plain tap or keypress tears it too */
+  stub.addEventListener('click', () => { if (!pulled) tear(); });
+  reset && reset.addEventListener('click', mend);
+  ticket.addEventListener('animationend', e => { if (e.animationName === 'tk-mend') ticket.classList.remove('mend'); });
 })();
 
 /* ------------------------------------------------------------- 御神籤 */

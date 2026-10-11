@@ -521,8 +521,13 @@ const decoded = new Map();
 function want(i) {
   i = (i + M) % M;
   if (decoded.has(i)) return decoded.get(i);
-  const im = new Image(); im.decoding = 'async'; im.src = PAGES[i].url;
-  const p = (im.decode ? im.decode() : new Promise(r => { im.onload = im.onerror = r; })).catch(() => {}).then(() => im);
+  const load = url => { const im = new Image(); im.decoding = 'async'; im.src = url;
+    return (im.decode ? im.decode() : new Promise((r, j) => { im.onload = r; im.onerror = j; })).then(() => im); };
+  /* a phone on a patchy network drops the odd request: try once more, and
+     if the page still will not come, forget it so the next turn asks again */
+  const p = load(PAGES[i].url)
+    .catch(() => new Promise(r => setTimeout(r, 700)).then(() => load(PAGES[i].url + (PAGES[i].url.includes('?') ? '&' : '?') + 'r=1')))
+    .catch(() => { decoded.delete(i); const im = new Image(); return im; });
   decoded.set(i, p); return p;
 }
 function warmAround(i) {
