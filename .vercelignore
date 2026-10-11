@@ -1,0 +1,10 @@
+# Only the site goes to Vercel. The music is deployed (it is kept out of git,
+# not out of the site); the tooling, plans and source photos are not.
+.claude
+.git
+tools
+assets/source
+PLAN.md
+skills-lock.json
+.env.local
+.vercel

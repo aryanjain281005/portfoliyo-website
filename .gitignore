@@ -3,3 +3,5 @@
 skills-lock.json
 assets/source/
 assets/audio/
+.vercel
+.env*
