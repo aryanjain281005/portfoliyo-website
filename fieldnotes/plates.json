@@ -1,0 +1,47 @@
+[
+ {
+  "file": "01-imposter.webp",
+  "title": "IMPOSTER",
+  "place": "n8n \u00b7 Business"
+ },
+ {
+  "file": "02-vyanasoul.webp",
+  "title": "VyanaSoul",
+  "place": "Client \u00b7 Live"
+ },
+ {
+  "file": "03-wordoo.webp",
+  "title": "Wordoo",
+  "place": "Flutter \u00b7 EdTech"
+ },
+ {
+  "file": "04-prithvinet.webp",
+  "title": "PrithviNet",
+  "place": "Climate \u00b7 Data"
+ },
+ {
+  "file": "05-travel.webp",
+  "title": "Travel AI",
+  "place": "AI \u00b7 Live"
+ },
+ {
+  "file": "06-spendly.webp",
+  "title": "Spendly",
+  "place": "Flask \u00b7 Live"
+ },
+ {
+  "file": "07-truthstamp.webp",
+  "title": "TruthStamp",
+  "place": "Web3 \u00b7 Rust"
+ },
+ {
+  "file": "08-skillscout.webp",
+  "title": "SkillScout",
+  "place": "Flutter \u00b7 Mobile"
+ },
+ {
+  "file": "09-secondbrain.webp",
+  "title": "Second Brain",
+  "place": "JavaScript \u00b7 First"
+ }
+]
