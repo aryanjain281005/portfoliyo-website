@@ -2,51 +2,265 @@
  {
   "file": "00-author.webp",
   "title": "Aryan Jain",
-  "place": "The author"
+  "sub": "the one who builds all of this",
+  "year": "2026",
+  "place": "The author",
+  "body": [
+   "I learned to code the way most people learn to swim: by jumping in. Codeforces taught me to love a hard problem; building things taught me to love a finished one.",
+   "I like the place where software meets a real business: a form that turns into an order desk, a site that books a client's week, an app that helps a child read.",
+   "These field notes are what I have built so far. Turn the page."
+  ],
+  "rows": [
+   [
+    "Studying",
+    "B.Tech CSE · IIIT Naya Raipur · 2025–29"
+   ],
+   [
+    "From",
+    "Baraut, Uttar Pradesh"
+   ],
+   [
+    "Open to",
+    "internships where tech meets business"
+   ]
+  ],
+  "caption": "fig. 0 — a lookout, somewhere above the clouds"
  },
  {
   "file": "01-imposter.webp",
   "title": "IMPOSTER",
-  "place": "n8n \u00b7 Business"
+  "sub": "a poster business that runs itself",
+  "year": "2026",
+  "place": "n8n · Business",
+  "body": [
+   "I launched a custom poster-printing business on a single Google Form, to learn whether anyone would order before I built anything. They did.",
+   "Then every order meant the same chores by hand: pricing, checking designs, making Drive folders, sorting A3 from A4, zipping files, typing the WhatsApp message. So I wired the business together with n8n.",
+   "Now an order prices itself, validates its design and lands on a dashboard. Marking it READY zips the files, makes the customer link and drafts the message. The web interface came last, on the same workflows."
+  ],
+  "rows": [
+   [
+    "Role",
+    "Founder & builder"
+   ],
+   [
+    "Stack",
+    "n8n · Google Forms · Sheets · Drive · Next.js"
+   ],
+   [
+    "Where",
+    "github.com/aryanjain281005"
+   ]
+  ],
+  "caption": "fig. 1 — the order desk; every status is a workflow"
  },
  {
   "file": "02-vyanasoul.webp",
   "title": "VyanaSoul",
-  "place": "Client \u00b7 Live"
+  "sub": "a live platform for a spiritual consultancy",
+  "year": "2026",
+  "place": "Client · Live",
+  "body": [
+   "A client needed more than a brochure: services, courses, a blog, a gallery, testimonials and an FAQ, in English and in Hindi.",
+   "I built it end to end and shipped it to production: Supabase authentication, dashboards for every user, consultation booking, and an admin panel to run the whole practice.",
+   "Every booking pings the consultant through a Telegram bot, so nothing waits in an inbox."
+  ],
+  "rows": [
+   [
+    "Role",
+    "Freelance · full stack"
+   ],
+   [
+    "Stack",
+    "React · Vite · Supabase · Telegram Bot · Vercel"
+   ],
+   [
+    "Where",
+    "vyanasoul.vercel.app"
+   ]
+  ],
+  "caption": "fig. 2 — live in production, desktop and phone"
  },
  {
   "file": "03-wordoo.webp",
   "title": "Wordoo",
-  "place": "Flutter \u00b7 EdTech"
+  "sub": "a reading adventure for children aged 5–10",
+  "year": "2026",
+  "place": "Flutter · EdTech",
+  "body": [
+   "A story-driven literacy companion in English and Hindi. It begins with a gentle screening, then turns the result into adaptive mini-games across six reading skills.",
+   "Parents get a weekly progress report. Read-aloud tasks are scored on the device itself, so a child's voice never leaves it.",
+   "It is deliberately not a diagnosis: it says which skills are strong, developing or need support, and never labels a child."
+  ],
+  "rows": [
+   [
+    "Role",
+    "Designer & developer"
+   ],
+   [
+    "Stack",
+    "Flutter · Dart · Node.js"
+   ],
+   [
+    "Where",
+    "github.com/aryanjain281005/wordoo"
+   ]
+  ],
+  "caption": "fig. 3 — a world to read through, a report for parents"
  },
  {
   "file": "04-prithvinet.webp",
   "title": "PrithviNet",
-  "place": "Climate \u00b7 Data"
+  "sub": "air, water and noise, watched live",
+  "year": "2026",
+  "place": "Climate · Data",
+  "body": [
+   "An environmental monitoring and compliance platform for India: live air quality for sixteen cities from the World Air Quality Index, with water quality and noise alongside.",
+   "A dark Leaflet map colours every station by India's NAQI bands. Compliance alerts are raised from CPCB limits, with forecasting and anomaly detection on top, refreshing every minute."
+  ],
+  "rows": [
+   [
+    "Role",
+    "Full stack"
+   ],
+   [
+    "Stack",
+    "Next.js · TypeScript · Leaflet · WAQI API"
+   ],
+   [
+    "Where",
+    "github.com/aryanjain281005/prithvunet"
+   ]
+  ],
+  "caption": "fig. 4 — from a sensor reading to an alert"
  },
  {
   "file": "05-travel.webp",
   "title": "Travel AI",
-  "place": "AI \u00b7 Live"
+  "sub": "trip plans sized to a budget",
+  "year": "2025",
+  "place": "AI · Live",
+  "body": [
+   "Tell it a city, a budget and how many days. It answers with a day-by-day plan: where to eat, what to see, and how crowded each place is likely to be.",
+   "Eighty-five destinations across India and beyond, every activity sorted by kind, and the whole itinerary exported as a PDF to take on the road."
+  ],
+  "rows": [
+   [
+    "Role",
+    "Front end"
+   ],
+   [
+    "Stack",
+    "React · TypeScript · Vite · Tailwind"
+   ],
+   [
+    "Where",
+    "travel-ai-drab.vercel.app"
+   ]
+  ],
+  "caption": "fig. 5 — the planner, live"
  },
  {
   "file": "06-spendly.webp",
   "title": "Spendly",
-  "place": "Flask \u00b7 Live"
+  "sub": "where the money goes",
+  "year": "2026",
+  "place": "Flask · Live",
+  "body": [
+   "A personal expense tracker built from the server up: accounts with hashed passwords, expenses in rupees validated on the server, and seven fixed categories.",
+   "The profile is the product: totals, recent transactions, a category breakdown with percentage bars, and date filters from this month to all time."
+  ],
+  "rows": [
+   [
+    "Role",
+    "Full stack"
+   ],
+   [
+    "Stack",
+    "Python · Flask · SQLite · Railway"
+   ],
+   [
+    "Where",
+    "spendly · railway.app"
+   ]
+  ],
+  "caption": "fig. 6 — know where your money goes"
  },
  {
   "file": "07-truthstamp.webp",
   "title": "TruthStamp",
-  "place": "Web3 \u00b7 Rust"
+  "sub": "fact-checking that cannot be quietly edited",
+  "year": "2025",
+  "place": "Web3 · Rust",
+  "body": [
+   "A decentralized fact-checking platform on Stellar's Soroban smart contracts. A claim is submitted, verifiers weigh in, and the verdict is stamped on-chain where no one can rewrite it later.",
+   "My first time writing contracts in Rust, and the first time I had to think about what it means for data to be permanent."
+  ],
+  "rows": [
+   [
+    "Role",
+    "Smart contracts · front end"
+   ],
+   [
+    "Stack",
+    "Rust · Stellar Soroban · React · TypeScript"
+   ],
+   [
+    "Where",
+    "github.com/aryanjain281005/truthstamp-dapp"
+   ]
+  ],
+  "caption": "fig. 7 — a claim, from submission to stamp"
  },
  {
   "file": "08-skillscout.webp",
   "title": "SkillScout",
-  "place": "Flutter \u00b7 Mobile"
+  "sub": "a marketplace for local skills",
+  "year": "2025",
+  "place": "Flutter · Mobile",
+  "body": [
+   "A mobile marketplace that connects people who need a job done with the people who can do it: electricians, tutors, plumbers, painters.",
+   "Two kinds of account in one app, bookings and profiles stored in Supabase, and a Material 3 interface built in Flutter."
+  ],
+  "rows": [
+   [
+    "Role",
+    "Mobile developer"
+   ],
+   [
+    "Stack",
+    "Flutter · Dart · Supabase · Material 3"
+   ],
+   [
+    "Where",
+    "github.com/aryanjain281005/SKILLSCOUT"
+   ]
+  ],
+  "caption": "fig. 8 — two sides of one booking"
  },
  {
   "file": "09-secondbrain.webp",
   "title": "Second Brain",
-  "place": "JavaScript \u00b7 First"
+  "sub": "the first project I can explain line by line",
+  "year": "2026",
+  "place": "JavaScript · First",
+  "body": [
+   "A visual canvas for thoughts: write one, it becomes a note; drag it anywhere; draw links between related ideas; close the tab and it is all still there.",
+   "No framework and no tutorial copied line by line. It is small, and I can explain every line of it, which is exactly why it is here."
+  ],
+  "rows": [
+   [
+    "Role",
+    "Everything"
+   ],
+   [
+    "Stack",
+    "HTML · CSS · vanilla JavaScript"
+   ],
+   [
+    "Where",
+    "github.com/aryanjain281005/second-Brain"
+   ]
+  ],
+  "caption": "fig. 9 — my rule for learning, as a canvas"
  }
 ]

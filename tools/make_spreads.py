@@ -22,7 +22,8 @@ FD = os.path.join(HERE, 'fonts-dl')
 OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, 'spreads')
 os.makedirs(OUT, exist_ok=True)
 
-S = 1.5                       # output scale over the 1760x1240 reference
+S = float(os.environ.get('SPREAD_SCALE', 1.5))   # output scale over the 1760x1240 reference
+SUFFIX = os.environ.get('SPREAD_SUFFIX', '')
 W, H = int(1760 * S), int(1240 * S)
 INK = (43, 39, 33)
 INK_SOFT = (43, 39, 33, 150)
@@ -414,8 +415,10 @@ if __name__ == '__main__':
     meta = []
     for i, p in enumerate([AUTHOR] + PROJECTS):
         im = spread(p, i)
-        fn = f'{i:02d}-{p["key"]}.webp'
+        fn = f'{i:02d}-{p["key"]}{SUFFIX}.webp'
         im.save(os.path.join(OUT, fn), 'WEBP', quality=86, method=6)
-        meta.append(dict(file=fn, title=p['title'], place=p['place']))
+        rows = p.get('rows') or [('Role', p['role']), ('Stack', p['stack'])] + ([('Where', p['where'])] if p.get('where') else [])
+        meta.append(dict(file=fn, title=p['title'], sub=p['sub'], year=p['year'], place=p['place'], body=p['body'],
+                         rows=[list(r) for r in rows], caption=p['fig']['cap']))
         print(fn, os.path.getsize(os.path.join(OUT, fn)) // 1024, 'KB')
-    json.dump(meta, open(os.path.join(OUT, 'plates.json'), 'w'), indent=1)
+    if not SUFFIX: json.dump(meta, open(os.path.join(OUT, 'plates.json'), 'w'), indent=1, ensure_ascii=False)

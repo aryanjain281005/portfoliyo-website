@@ -37,7 +37,15 @@ const PAGES = [
   { file: '09-secondbrain.webp', title: 'Second Brain', place: 'JavaScript · First',
     links: [['Source', 'https://github.com/aryanjain281005/second-Brain']] }
 ];
-PAGES.forEach(p => p.url = DIR + p.file);
+/* three sizes of every spread: a light one for phones, the standard one, and
+   a 2x one for dense desktop screens, where the loupe can show real detail */
+const PHONE = matchMedia('(max-width: 820px), (pointer: coarse)').matches;
+const VARIANT = PHONE ? '-m' : ((devicePixelRatio || 1) > 1.3 ? '@2x' : '');
+PAGES.forEach(p => p.url = DIR + p.file.replace(/\.webp$/, VARIANT + '.webp'));
+/* the words on each page, as text: read on a phone, heard by a screen reader */
+let TEXT = null;
+const loadText = () => TEXT ? Promise.resolve(TEXT) :
+  fetch(DIR + 'plates.json').then(r => r.json()).then(j => (TEXT = j)).catch(() => (TEXT = []));
 const M = PAGES.length;
 
 const fn = document.getElementById('fn');
@@ -152,7 +160,24 @@ function caption() {
   }
 }
 /* the spread is a picture, so its links live under the book, in the page */
+const reader = document.getElementById('fnRead');
+function readPage() {
+  if (!reader) return;
+  loadText().then(T => {
+    const t = T[idx]; if (!t) return;
+    reader.textContent = '';
+    const k = el('span', 'fn-read-k'); k.textContent = 'Plate ' + String(idx).padStart(2, '0') + ' · ' + t.year; reader.appendChild(k);
+    const h = el('h3', 'fn-read-t'); h.textContent = t.title; reader.appendChild(h);
+    const sub = el('p', 'fn-read-sub'); sub.textContent = t.sub; reader.appendChild(sub);
+    t.body.forEach(par => { const q = el('p', 'fn-read-p'); q.textContent = par; reader.appendChild(q); });
+    const dl = el('dl', 'fn-read-dl');
+    t.rows.forEach(r => { const dt = el('dt'); dt.textContent = r[0]; const dd = el('dd'); dd.textContent = r[1]; dl.appendChild(dt); dl.appendChild(dd); });
+    reader.appendChild(dl);
+    const c = el('p', 'fn-read-cap'); c.textContent = t.caption; reader.appendChild(c);
+  });
+}
 function links() {
+  readPage();
   linkBox.textContent = '';
   PAGES[idx].links.forEach(l => {
     const a = el('a'); a.href = l[1]; a.target = '_blank'; a.rel = 'noopener';
