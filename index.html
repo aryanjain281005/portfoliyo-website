@@ -64,7 +64,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 }
 #vignette{
   position:fixed; inset:0; z-index:55; pointer-events:none;
-  background:radial-gradient(125% 95% at 50% 42%, transparent 40%, rgba(2,4,6,.55) 100%);
+  background:radial-gradient(125% 95% at 50% 42%, transparent 48%, rgba(2,4,6,.38) 100%);
 }
 .page{ position:relative; z-index:10; }
 
@@ -5069,7 +5069,7 @@ function initPost() {
     uniforms: {
       tS: { value: null }, tB: { value: null }, uRes: { value: new THREE.Vector2(w, h) },
       uT: { value: 0 }, uBloom: { value: .34 }, uCA: { value: .45 }, uGrain: { value: .018 },
-      uVig: { value: 1 }, uExp: { value: .62 }, uFade: { value: 1 }, uSat: { value: 1.05 }
+      uVig: { value: .72 }, uExp: { value: .84 }, uFade: { value: 1 }, uSat: { value: 1.05 }
     },
     vertexShader: QUAD_VS,
     fragmentShader:
@@ -5112,6 +5112,10 @@ function initPost() {
          nearly all shadow. Pivoted low, at 0.30, so it deepens the night
          without pulling the lit paper of the hall down with it. */
       ' e = clamp((e - 0.30) * 1.00 + 0.30, 0.0, 1.0);\n' +
+      /* Lift the low mids so the hall, the steps and the trees read on any
+         screen (a phone at half brightness above all), while true black stays
+         black: the curve is zero at 0 and 1 and peaks around 0.2. */
+      ' e += 0.16 * e * (1.0 - e) * (1.0 - e);\n' +
       ' gl_FragColor = vec4( e, 1.0 );\n' +
       '}'
   });
