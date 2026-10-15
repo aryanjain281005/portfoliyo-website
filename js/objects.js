@@ -77,6 +77,28 @@ function visibleLoop(el, step) {
     px = e.clientX; py = e.clientY;
   }, { passive: true });
   wall.addEventListener('pointerleave', () => { px = py = null; });
+  /* a finger brushes too. Touch events keep arriving while the page scrolls
+     (pointer events are cancelled the moment a pan starts), so a swipe across
+     the wall, or a scroll that starts on it, sets the plaques swinging: the
+     sideways part of the stroke pushes, and the upward part catches each
+     plaque off-centre so it turns away from where the finger crossed it */
+  let fx = null, fy = null;
+  wall.addEventListener('touchstart', e => { const t = e.touches[0]; fx = t.clientX; fy = t.clientY; }, { passive: true });
+  wall.addEventListener('touchmove', e => {
+    const t = e.touches[0]; if (fx === null) { fx = t.clientX; fy = t.clientY; return; }
+    const dx = t.clientX - fx, dy = t.clientY - fy;
+    measure();
+    for (const it of items) {
+      const r = it.rect;
+      if (t.clientX > r.left - 10 && t.clientX < r.right + 10 && t.clientY > r.top - 30 && t.clientY < r.bottom + 14) {
+        const lever = .4 + .6 * Math.min(1, Math.max(0, (t.clientY - r.top) / r.height));
+        const off = Math.max(-1, Math.min(1, (t.clientX - (r.left + r.width / 2)) / (r.width / 2)));
+        it.v += Math.max(-30, Math.min(30, dx * 1.6 * lever - Math.abs(dy) * .45 * off));
+      }
+    }
+    fx = t.clientX; fy = t.clientY; loop.wake();
+  }, { passive: true });
+  wall.addEventListener('touchend', () => { fx = fy = null; }, { passive: true });
   addEventListener('scroll', () => { rectsAt = -1; }, { passive: true });
   /* turning one over gives it a small knock too */
   items.forEach(it => it.btn.addEventListener('click', () => {
@@ -117,6 +139,30 @@ function visibleLoop(el, step) {
       s.try_ = nx * 14; s.trx = -ny * 10; loop.wake();
     }, { passive: true });
     zone.addEventListener('pointerleave', () => { s.trx = s.try_ = 0; loop.wake(); });
+  }
+  /* a phone has no pointer to lean toward, but it has a tilt: the card
+     answers the hand holding it. The rest position follows slowly, so however
+     the phone is held the card settles flat. iOS asks permission, which only
+     a tap can request, so there it starts with the first touch of the card */
+  if (!FINE && !REDUCE && 'DeviceOrientationEvent' in window) {
+    let base = null, live = false;
+    const onTilt = e => {
+      if (e.beta == null || e.gamma == null) return;
+      if (!base) base = { b: e.beta, g: e.gamma };
+      base.b += (e.beta - base.b) * .02; base.g += (e.gamma - base.g) * .02;
+      s.try_ = Math.max(-14, Math.min(14, (e.gamma - base.g) * 1.1));
+      s.trx = Math.max(-10, Math.min(10, -(e.beta - base.b) * .8));
+      loop.wake();
+    };
+    const listen = () => { if (!live) { live = true; addEventListener('deviceorientation', onTilt, { passive: true }); } };
+    const ask = window.DeviceOrientationEvent.requestPermission;
+    const viaTap = () => card.addEventListener('click', () => {
+      ask.call(window.DeviceOrientationEvent).then(r => { if (r === 'granted') listen(); }).catch(() => {});
+    }, { once: true });
+    /* Chrome grants it without asking; Safari refuses outside a tap, and
+       then the first touch of the card asks */
+    if (typeof ask !== 'function') listen();
+    else ask.call(window.DeviceOrientationEvent).then(r => { r === 'granted' ? listen() : viaTap(); }, viaTap);
   }
   card.addEventListener('click', e => { if (!e.target.closest('a')) flip(); });
   flipBtn && flipBtn.addEventListener('click', flip);

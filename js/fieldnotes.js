@@ -364,8 +364,10 @@ const zRead = document.getElementById('zRead');
 const loupeBtn = document.getElementById('loupeBtn');
 const zInBtn = document.getElementById('zIn'), zOutBtn = document.getElementById('zOut');
 const MAG = 2.3;
-let loupeOn = true, lx = null, ly = null, lgrab = null, lTarget = null;
-function loupeSize() { return Math.round(Math.max(150, Math.min(240, book.clientWidth * 0.22))); }
+/* on a phone the book is small enough that a resting glass would hide a
+   third of it: there it waits in the toolbar until asked for */
+let loupeOn = !PHONE, lx = null, ly = null, lgrab = null, lTarget = null;
+function loupeSize() { return Math.round(Math.max(PHONE ? 112 : 150, Math.min(240, book.clientWidth * (PHONE ? .36 : 0.22)))); }
 function bookBox() { return { x: 0, y: 0, w: book.clientWidth, h: book.clientHeight }; }
 /* it rests on the lower corner of the right page, half off the paper */
 function restLoupe() { const b = bookBox(); lx = b.x + b.w * 0.92; ly = b.y + b.h * 0.74; placeLoupe(); }
@@ -453,7 +455,11 @@ loupeBtn.onclick = () => {
   if (loupeOn && lx === null) restLoupe();
   placeLoupe();
 };
-addEventListener('resize', () => { if (isOpen) { lx = null; restLoupe(); } });
+/* a phone fires resize whenever its address bar slides, which must not
+   snatch the glass back to its corner: only a change of width re-seats it */
+let lastW = innerWidth;
+loupeBtn.setAttribute('aria-pressed', String(loupeOn)); loupe.classList.toggle('on', loupeOn);
+addEventListener('resize', () => { if (isOpen && innerWidth !== lastW) { lx = null; restLoupe(); } lastW = innerWidth; });
 function syncZoom() {
   zRead.textContent = Math.round(view.tz * 100) + '%';
   zOutBtn.disabled = view.tz <= ZOOM_MIN + 0.001;
