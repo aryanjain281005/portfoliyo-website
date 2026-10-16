@@ -327,6 +327,7 @@ function commit() {
   if (REDUCED) { idx = turn.to; turn = null; paint(); return; }
   animateTo(1, () => { idx = turn.to; turn = null; paint(); }, 170, 26);
   kick();
+  if (window.BUZZ) window.BUZZ(7);
 }
 function cancel() {
   if (!turn) return;

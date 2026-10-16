@@ -17,6 +17,7 @@
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const FINE = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const $$ = (s, r) => [].slice.call((r || document).querySelectorAll(s));
+const buzz = p => window.BUZZ && window.BUZZ(p);
 
 /* a rAF loop that only runs while its element is near the viewport */
 function visibleLoop(el, step) {
@@ -104,7 +105,7 @@ function visibleLoop(el, step) {
   items.forEach(it => it.btn.addEventListener('click', () => {
     const on = it.btn.getAttribute('aria-pressed') !== 'true';
     it.btn.setAttribute('aria-pressed', String(on));
-    it.v += on ? 22 : -22; loop.wake();
+    it.v += on ? 22 : -22; loop.wake(); buzz(9);
   }));
 })();
 
@@ -126,6 +127,7 @@ function visibleLoop(el, step) {
   const flip = () => {
     s.tf = s.tf ? 0 : 180;
     if (REDUCE) { s.f = s.tf; apply(); }
+    buzz(10);
     flipBtn && flipBtn.setAttribute('aria-pressed', String(!!s.tf));
     flipBtn && (flipBtn.querySelector('span').textContent = s.tf ? 'Turn it back' : 'Turn it over');
     loop.wake();
@@ -214,11 +216,12 @@ function visibleLoop(el, step) {
       root.querySelector('.omi-rank-en').textContent = RANK[f[0]];
       root.querySelector('.omi-text').textContent = f[1];
       root.querySelector('.omi-advice').innerHTML = 'Advice — ' + f[2];
-      slip.hidden = false; void slip.offsetWidth; slip.classList.add('in');
+      slip.hidden = false; void slip.offsetWidth; slip.classList.add('in'); buzz(22);
       busy = false;
     };
     if (REDUCE) { box.classList.add('drawn'); reveal(); return; }
     box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake');
+    buzz([14, 60, 14, 60, 14, 60, 14]);
     setTimeout(() => { box.classList.add('drawn'); }, 820);
     setTimeout(reveal, 1350);
   };
